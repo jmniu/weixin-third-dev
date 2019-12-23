@@ -1,8 +1,8 @@
 package wx_third_dev
 
 import (
+	"github.com/jmniu/wx-third-dev/wxopenapi"
 	"time"
-	"wx-third-dev/wxopenapi"
 )
 
 func InitWxOpen(componentToken string,

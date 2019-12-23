@@ -3,8 +3,8 @@ package wxopenapi
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/jmniu/wx-third-dev/pkg/logger"
 	"github.com/parnurzeal/gorequest"
-	"wx-third-dev/pkg/logger"
 )
 
 const (
