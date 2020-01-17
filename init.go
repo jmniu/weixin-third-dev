@@ -1,7 +1,7 @@
-package wx_third_dev
+package weixin_third_dev
 
 import (
-	"github.com/jmniu/wx-third-dev/wxopenapi"
+	"github.com/jmniu/weixin-third-dev/wxopenapi"
 	"time"
 )
 

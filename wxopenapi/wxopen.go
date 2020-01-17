@@ -7,7 +7,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/jmniu/wx-third-dev/wxopencrypt"
+	"github.com/jmniu/weixin-third-dev/wxopencrypt"
 )
 
 var STOKEN string

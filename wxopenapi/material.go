@@ -3,7 +3,7 @@ package wxopenapi
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/jmniu/wx-third-dev/pkg/logger"
+	"github.com/jmniu/weixin-third-dev/pkg/logger"
 	"github.com/parnurzeal/gorequest"
 	"github.com/wendal/errors"
 	"strings"
