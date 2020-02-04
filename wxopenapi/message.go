@@ -10,6 +10,9 @@ import (
 const (
 	URL_MESSAGE_MASS_SENDALL  = "https://api.weixin.qq.com/cgi-bin/message/mass/sendall?access_token=%v"
 	URL_MESSAGE_TEMPLATE_SEND = "https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=%v"
+	URL_MESSAGE_TEMPLATE_LIST = "https://api.weixin.qq.com/cgi-bin/template/get_all_private_template?access_token=%v"
+	URL_MESSAGE_TEMPLATE_ADD  = "https://api.weixin.qq.com/cgi-bin/template/api_add_template?access_token=%v"
+	URL_MESSAGE_TEMPLATE_DEL  = "https://api.weixin.qq.com/cgi-bin/template/del_private_template?access_token=%v"
 )
 
 type MessageMassSend struct {
@@ -126,6 +129,71 @@ func (this *WxOpen) MessageTemplateSend(accessToken string, msg MessageTemplate)
 	req := gorequest.New()
 	_, resBody, _ := req.Post(url).SendString(string(reqBody)).End()
 	logger.Infof("MessageTemplateSend url[%s] reqBody[%v] resBody[%v]", url, string(reqBody), resBody)
+
+	var ret struct {
+		ErrCode int `json:"errcode"`
+	}
+	_ = json.Unmarshal([]byte(resBody), &ret)
+	if ret.ErrCode > 0 {
+		return false
+	} else {
+		return true
+	}
+}
+
+type MessageTemplateListItem struct {
+	TemplateID      string `json:"template_id"`
+	Title           string `json:"title"`
+	PrimaryIndustry string `json:"primary_industry"`
+	DeputyIndustry  string `json:"deputy_industry"`
+	Content         string `json:"content"`
+	Example         string `json:"example"`
+}
+
+type MessageTemplateListReturn struct {
+	TemplateList []MessageTemplateListItem `json:"template_list"`
+}
+
+func (this *WxOpen) MessageTemplateList(accessToken string) MessageTemplateListReturn {
+	url := fmt.Sprintf(URL_MESSAGE_TEMPLATE_LIST, accessToken)
+	req := gorequest.New()
+	_, resBody, _ := req.Get(url).End()
+	logger.Infof("MessageTemplateList url[%s] resBody[%v]", url, resBody)
+
+	var ret MessageTemplateListReturn
+	json.Unmarshal([]byte(resBody), &ret)
+
+	return ret
+}
+
+type MessageTemplateAddReturn struct {
+	ErrCode    int    `json:"err_code"`
+	ErrMsg     string `json:"err_msg"`
+	TemplateID string `json:"template_id"`
+}
+
+func (this *WxOpen) MessageTemplateAdd(accessToken string, shortID string) MessageTemplateAddReturn {
+	url := fmt.Sprintf(URL_MESSAGE_TEMPLATE_ADD, accessToken)
+	reqBody, _ := json.Marshal(map[string]string{
+		"template_id_short": shortID,
+	})
+	req := gorequest.New()
+	_, resBody, _ := req.Post(url).SendString(string(reqBody)).End()
+	logger.Infof("MessageTemplateAdd url[%s] reqBody[%v] resBody[%v]", url, string(reqBody), resBody)
+
+	var ret MessageTemplateAddReturn
+	_ = json.Unmarshal([]byte(resBody), &ret)
+	return ret
+}
+
+func (this *WxOpen) MessageTemplateDelete(accessToken string, templateID string) bool {
+	url := fmt.Sprintf(URL_MESSAGE_TEMPLATE_DEL, accessToken)
+	reqBody, _ := json.Marshal(map[string]string{
+		"template_id": templateID,
+	})
+	req := gorequest.New()
+	_, resBody, _ := req.Post(url).SendString(string(reqBody)).End()
+	logger.Infof("MessageTemplateDelete url[%s] reqBody[%v] resBody[%v]", url, string(reqBody), resBody)
 
 	var ret struct {
 		ErrCode int `json:"errcode"`
