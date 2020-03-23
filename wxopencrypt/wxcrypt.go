@@ -197,6 +197,36 @@ func (this *WXBizMsgCrypt) ComputeSignature(sToken string, sTimeStamp string, sN
 	return
 }
 
+func (this *WXBizMsgCrypt) ComputeJsTicketSignature(jsTicket string, sTimeStamp string, sNonce string, url string) (ret int, sSignature string) {
+	if 0 == len(jsTicket) || 0 == len(sNonce) || 0 == len(url) || 0 == len(sTimeStamp) {
+		ret = -1
+		return
+	}
+
+	//sort
+	var vecStr []string
+	vecStr = append(vecStr, "jsapi_ticket="+jsTicket)
+	vecStr = append(vecStr, "timestamp="+sTimeStamp)
+	vecStr = append(vecStr, "noncestr="+sNonce)
+	vecStr = append(vecStr, "url="+url)
+	// std::sort( vecStr.begin(), vecStr.end() );
+	sort.Strings(vecStr)
+	sStr := vecStr[0] + "&" + vecStr[1] + "&" + vecStr[2] + "&" + vecStr[3]
+
+	//compute
+	h := sha1.New()
+	h.Write([]byte(sStr))
+	output := h.Sum(nil)
+
+	// to hex
+	for i := 0; i < len(output); i++ {
+		// fmt.Sprintln(,)
+		hexStr := fmt.Sprintf("%02x", 0xff&output[i])
+		sSignature = sSignature + hexStr
+	}
+	return
+}
+
 func (this *WXBizMsgCrypt) ValidateSignature(sMsgSignature string, sTimeStamp string, sNonce string, sEncryptMsg string) int {
 	ret, sSignature := this.ComputeSignature(this.m_sToken, sTimeStamp, sNonce, sEncryptMsg)
 	if 0 != ret {
